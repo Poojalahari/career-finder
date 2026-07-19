@@ -2,6 +2,7 @@ import io
 from urllib.error import HTTPError
 
 from app.extensions import db
+from app.auth.services import register_user
 from app.models import CareerAssessment, User
 from app.services.supabase_auth import SupabaseAuthError, SupabaseSession
 from tests.conftest import create_user, login, login_session, register
@@ -12,6 +13,63 @@ AUTH_ID = "df95655c-9360-4c25-b65d-56f342fc26f1"
 
 def auth_response(email="user@example.com"):
     return SupabaseSession(AUTH_ID, email, "User Example", True, "access-token", "refresh-token")
+
+
+def test_register_page_loads(client):
+    assert client.get("/register").status_code == 200
+
+
+def test_registration_disabled_returns_safe_structured_error(client, app, monkeypatch):
+    monkeypatch.setattr("app.auth.services.supabase_auth.enabled", lambda: False)
+
+    response = register(client)
+
+    assert response.status_code == 200
+    assert b"Registration is temporarily unavailable" in response.data
+    assert b"SUPABASE" not in response.data
+    with app.app_context():
+        user, error = register_user("User Example", "user@example.com", "StrongPass1!")
+    assert user is None
+    assert error == {
+        "code": "auth_not_configured",
+        "message": "Registration is temporarily unavailable. Please try again later.",
+    }
+
+
+def test_registration_route_handles_malformed_service_error(client, monkeypatch):
+    monkeypatch.setattr("app.auth.routes.register_user", lambda *args: (None, "internal configuration detail"))
+
+    response = register(client)
+
+    assert response.status_code == 200
+    assert b"Registration is temporarily unavailable" in response.data
+    assert b"internal configuration detail" not in response.data
+
+
+def test_invalid_signup_response_is_safe(client, monkeypatch):
+    monkeypatch.setattr("app.auth.services.supabase_auth.sign_up", lambda *args: ["invalid"])
+
+    response = register(client)
+
+    assert response.status_code == 200
+    assert b"could not create your account" in response.data
+    assert b"invalid" not in response.data
+
+
+def test_invalid_immediate_session_response_is_safe(client, monkeypatch):
+    monkeypatch.setattr(
+        "app.auth.services.supabase_auth.sign_up",
+        lambda *args: {
+            "user": {"id": AUTH_ID, "email": "user@example.com", "user_metadata": "invalid"},
+            "access_token": "not-returned-to-browser",
+        },
+    )
+
+    response = register(client)
+
+    assert response.status_code == 200
+    assert b"Registration is temporarily unavailable" in response.data
+    assert b"not-returned-to-browser" not in response.data
 
 
 def test_student_registration_sends_safe_metadata(client, app, monkeypatch):

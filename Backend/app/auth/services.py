@@ -1,7 +1,8 @@
 from datetime import datetime, timezone
+from typing import TypedDict
 from uuid import UUID
 
-from flask import current_app, session
+from flask import current_app, g, session
 from flask_login import current_user, login_user, logout_user
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -15,46 +16,91 @@ INVALID_CREDENTIALS = "Invalid email or password."
 DUPLICATE_SIGNUP_CODES = {"email_exists", "user_already_exists"}
 
 
-def map_signup_error(error: supabase_auth.SupabaseAuthError) -> tuple[str, str]:
+class RegistrationError(TypedDict):
+    code: str
+    message: str
+
+
+def registration_error(code: str, message: str) -> RegistrationError:
+    return {"code": code, "message": message}
+
+
+def _request_id() -> str:
+    return str(getattr(g, "request_id", "-"))
+
+
+def map_signup_error(error: supabase_auth.SupabaseAuthError) -> RegistrationError:
     code = error.code
     if code in DUPLICATE_SIGNUP_CODES:
-        return "account_exists", "An account already exists with this email. Please log in."
+        return registration_error("account_exists", "An account already exists with this email. Please log in.")
     if code == "weak_password":
-        return code, "Please choose a stronger password."
+        return registration_error(code, "Please choose a stronger password.")
     if code in {"email_address_invalid", "validation_failed"}:
-        return code, "Please enter a valid email address."
+        return registration_error(code, "Please enter a valid email address.")
     if code in {"signup_disabled", "email_provider_disabled"}:
-        return code, "New account registration is currently unavailable."
+        return registration_error(code, "New account registration is currently unavailable.")
     if code in {"over_request_rate_limit", "over_email_send_rate_limit", "429"}:
-        return code, "Too many attempts. Please wait and try again."
+        return registration_error(code, "Too many attempts. Please wait and try again.")
     if error.kind == "network" or code in {"network_error", "request_timeout"}:
-        return code, "Unable to connect. Check your connection and try again."
-    return code, "We could not create your account right now. Please try again."
+        return registration_error(code, "Unable to connect. Check your connection and try again.")
+    return registration_error(code, "We could not create your account right now. Please try again.")
 
 
-def register_user(full_name: str, email: str, password: str):
+def register_user(full_name: str, email: str, password: str) -> tuple[dict | None, RegistrationError | None]:
     if not supabase_auth.enabled():
-        return None, "Supabase authentication is not configured."
+        current_app.logger.error(
+            "registration_failure operation=configuration_check request_id=%s error_type=ConfigurationError",
+            _request_id(),
+        )
+        return None, registration_error(
+            "auth_not_configured",
+            "Registration is temporarily unavailable. Please try again later.",
+        )
+    current_app.logger.info("registration_progress operation=supabase_signup request_id=%s", _request_id())
     try:
         response = supabase_auth.sign_up(normalize_email(email), password, full_name.strip())
     except supabase_auth.SupabaseAuthError as exc:
-        code, message = map_signup_error(exc)
-        return None, {"code": code, "message": message}
+        return None, map_signup_error(exc)
+    if not isinstance(response, dict):
+        current_app.logger.error(
+            "registration_failure operation=response_parsing request_id=%s error_type=%s",
+            _request_id(),
+            type(response).__name__,
+        )
+        return None, registration_error("unexpected_response", "We could not create your account right now. Please try again.")
     # GoTrue returns the pending user directly when email confirmation is required,
     # but nests it under "user" when a session is issued.
     user = response.get("user") or (response if response.get("id") else {})
+    if not isinstance(user, dict):
+        user = {}
     try:
         UUID(str(user.get("id", "")))
-    except ValueError:
-        return None, {"code": "unexpected_response", "message": "We could not create your account right now. Please try again."}
+    except (TypeError, ValueError):
+        current_app.logger.error(
+            "registration_failure operation=response_parsing request_id=%s error_type=InvalidUserId",
+            _request_id(),
+        )
+        return None, registration_error("unexpected_response", "We could not create your account right now. Please try again.")
     if response.get("session") or response.get("access_token"):
-        auth_session = supabase_auth.session_from_response(response)
-        if auth_session.user_id != user["id"]:
-            return None, {"code": "session_mismatch", "message": "We could not create your account right now. Please try again."}
-        authenticated, error = _establish_login(auth_session)
+        current_app.logger.info("registration_progress operation=session_initialization request_id=%s", _request_id())
+        try:
+            auth_session = supabase_auth.session_from_response(response)
+            if auth_session.user_id != user["id"]:
+                return None, registration_error("session_mismatch", "We could not create your account right now. Please try again.")
+            authenticated, error = _establish_login(auth_session)
+        except Exception as exc:
+            db.session.rollback()
+            current_app.logger.error(
+                "registration_failure operation=session_initialization request_id=%s error_type=%s",
+                _request_id(),
+                type(exc).__name__,
+            )
+            return None, registration_error("registration_unavailable", "Registration is temporarily unavailable. Please try again later.")
         if not authenticated:
-            return None, {"code": "profile_error", "message": "Your account was created, but your profile could not be prepared."}
+            return None, registration_error("profile_error", "Your account was created, but your profile could not be prepared. Please try signing in.")
+        current_app.logger.info("registration_complete operation=authenticated_signup request_id=%s", _request_id())
         return {"user": user, "authenticated": True}, None
+    current_app.logger.info("registration_complete operation=confirmation_required request_id=%s", _request_id())
     return {"user": user, "authenticated": False}, None
 
 
@@ -103,6 +149,7 @@ def _establish_login(auth_session: supabase_auth.SupabaseSession, remember: bool
     if not auth_session.user_id or not auth_session.email_verified:
         return False, "Verify your email before signing in."
     try:
+        current_app.logger.info("registration_progress operation=profile_sync request_id=%s", _request_id())
         profile = _load_profile(auth_session.user_id, auth_session.email, auth_session.full_name)
         _bootstrap_first_super_admin(profile)
         if not profile.is_active:
@@ -112,9 +159,13 @@ def _establish_login(auth_session: supabase_auth.SupabaseSession, remember: bool
         profile.email_verified = True
         profile.last_login_at = datetime.now(timezone.utc)
         db.session.commit()
-    except SQLAlchemyError:
+    except SQLAlchemyError as exc:
         db.session.rollback()
-        current_app.logger.exception("Profile synchronization failed")
+        current_app.logger.error(
+            "registration_failure operation=database_commit request_id=%s error_type=%s",
+            _request_id(),
+            type(exc).__name__,
+        )
         return False, "Unable to load your account. Try again later."
 
     session.clear()
@@ -123,6 +174,7 @@ def _establish_login(auth_session: supabase_auth.SupabaseSession, remember: bool
     session["supabase_access_token"] = auth_session.access_token
     session["supabase_refresh_token"] = auth_session.refresh_token
     login_user(profile, remember=remember, fresh=True)
+    current_app.logger.info("registration_progress operation=session_initialized request_id=%s", _request_id())
     return True, None
 
 

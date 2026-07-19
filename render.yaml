@@ -1,17 +1,17 @@
 services:
   - type: web
     name: career-finder
-    runtime: python
+    runtime: docker
     plan: free
-    buildCommand: pip install -r Backend/requirements.txt
-    startCommand: flask --app Backend/wsgi.py db upgrade -d Backend/migrations && gunicorn --chdir Backend --bind 0.0.0.0:$PORT wsgi:app
+    dockerfilePath: ./Backend/Dockerfile
+    dockerContext: .
     healthCheckPath: /health
     autoDeployTrigger: commit
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.11
       - key: FLASK_ENV
         value: production
+      - key: FLASK_DEBUG
+        value: "false"
       - key: SESSION_COOKIE_SECURE
         value: "true"
       - key: FLASK_SECRET_KEY
@@ -29,4 +29,6 @@ services:
       - key: SUPABASE_EMAIL_REDIRECT_URL
         sync: false
       - key: SUPABASE_STORAGE_BUCKET
-        value: career-documents
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false

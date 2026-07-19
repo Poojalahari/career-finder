@@ -106,6 +106,18 @@ Use `.env.example` as the safe template and configure real values in `.env` or t
 
 With **Confirm Email** enabled, registration reports that the account was created and the verification link was sent. The default Supabase confirmation link redirects to `/auth/callback` with an implicit session, which the callback exchanges for the server-side Flask session before opening `/dashboard`. For a server-token callback instead, set the Confirm signup email link to `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=email`. Allow `http://127.0.0.1:5000/auth/callback` in Redirect URLs. Configure the recovery email link as `{{ .RedirectTo }}?token_hash={{ .TokenHash }}&type=recovery`. Run the Flask migrations, then execute `supabase/schema.sql` in the Supabase SQL editor to install the profile trigger, RLS, and private `career-documents` bucket policies.
 
+## Render Production
+
+Create the service from the root `render.yaml` Blueprint so Render builds `Backend/Dockerfile` with the repository root as its Docker context. The container applies all Flask migrations before starting Gunicorn on Render's dynamic `PORT`; `package.json` is only a local development launcher.
+
+Configure every `sync: false` environment variable in the Render dashboard. For the production Supabase project, enable email/password signup and set:
+
+- Site URL: `https://career-finder-a4dh.onrender.com`
+- Allowed redirect URL: `https://career-finder-a4dh.onrender.com/auth/callback`
+- `SUPABASE_EMAIL_REDIRECT_URL`: `https://career-finder-a4dh.onrender.com/auth/callback`
+
+The database URL must be the Supabase PostgreSQL connection or transaction-pooler URL supported by psycopg. Production startup intentionally fails before serving traffic when required authentication, callback, database, storage, admin, or secret-key configuration is missing.
+
 ## Database
 
 Migration `0009_uuid_profiles_storage` non-destructively maps legacy integer users to UUID profiles, retains legacy ownership columns for audit, removes legacy password hashes, converts active ownership to UUID foreign keys, and adds Supabase storage paths and ATS status constraints.

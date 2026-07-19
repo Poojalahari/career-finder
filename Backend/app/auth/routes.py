@@ -1,6 +1,6 @@
 from urllib.parse import urlsplit
 
-from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, session, url_for
+from flask import Blueprint, current_app, flash, g, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, logout_user
 
 from app.extensions import limiter
@@ -19,19 +19,62 @@ def register():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard.index"))
     form = RegisterForm()
-    if form.validate_on_submit():
+    form_valid = form.validate_on_submit()
+    if request.method == "POST":
+        current_app.logger.info(
+            "registration_progress operation=form_validation request_id=%s valid=%s",
+            getattr(g, "request_id", "-"),
+            form_valid,
+        )
+    if form_valid:
         normalized_email = form.email.data.strip().lower()
-        user, error = register_user(form.full_name.data, normalized_email, form.password.data)
+        try:
+            user, error = register_user(form.full_name.data, normalized_email, form.password.data)
+        except Exception as exc:
+            current_app.logger.error(
+                "registration_failure operation=register_user request_id=%s error_type=%s",
+                getattr(g, "request_id", "-"),
+                type(exc).__name__,
+            )
+            user, error = None, {
+                "code": "registration_unavailable",
+                "message": "Registration is temporarily unavailable. Please try again later.",
+            }
         if error:
+            if not isinstance(error, dict) or not isinstance(error.get("code"), str) or not isinstance(error.get("message"), str):
+                current_app.logger.error(
+                    "registration_failure operation=error_contract request_id=%s error_type=%s",
+                    getattr(g, "request_id", "-"),
+                    type(error).__name__,
+                )
+                error = {
+                    "code": "registration_unavailable",
+                    "message": "Registration is temporarily unavailable. Please try again later.",
+                }
             flash(error["message"], "error")
             if error["code"] == "account_exists":
                 return redirect(url_for("auth.login", email=normalized_email, reason="account-exists"))
-        elif user.get("authenticated"):
+        elif isinstance(user, dict) and user.get("authenticated"):
+            current_app.logger.info(
+                "registration_complete operation=dashboard_redirect request_id=%s",
+                getattr(g, "request_id", "-"),
+            )
             flash("Account created successfully. Opening your dashboard…", "success")
             return redirect(url_for("dashboard.index"))
-        else:
+        elif isinstance(user, dict):
+            current_app.logger.info(
+                "registration_complete operation=login_redirect request_id=%s",
+                getattr(g, "request_id", "-"),
+            )
             flash("Account created successfully. A verification link was sent to your email.", "success")
             return redirect(url_for("auth.login"))
+        else:
+            current_app.logger.error(
+                "registration_failure operation=result_contract request_id=%s error_type=%s",
+                getattr(g, "request_id", "-"),
+                type(user).__name__,
+            )
+            flash("Registration is temporarily unavailable. Please try again later.", "error")
     return render_template("auth/register.html", form=form)
 
 

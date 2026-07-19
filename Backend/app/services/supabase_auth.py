@@ -82,7 +82,25 @@ def _request(path: str, payload: dict | None = None, *, operation: str, api_key:
     request = Request(f"{base_url}/auth/v1/{path.lstrip('/')}", data=body, headers=headers, method=method)
     try:
         with urlopen(request, timeout=12) as response:
-            return json.loads(response.read().decode("utf-8") or "{}")
+            try:
+                result = json.loads(response.read().decode("utf-8") or "{}")
+            except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+                error = SupabaseAuthError(
+                    "Authentication service returned an invalid response.",
+                    code="invalid_response",
+                    kind="provider",
+                )
+                _log_failure(operation, error)
+                raise error from exc
+            if not isinstance(result, dict):
+                error = SupabaseAuthError(
+                    "Authentication service returned an invalid response.",
+                    code="invalid_response",
+                    kind="provider",
+                )
+                _log_failure(operation, error)
+                raise error
+            return result
     except HTTPError as exc:
         try:
             body_json = json.loads(exc.read().decode("utf-8"))

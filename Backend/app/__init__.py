@@ -28,6 +28,7 @@ def create_app(config_object=None):
     app.logger.info("Supabase URL configured: %s", "yes" if configured(app.config.get("SUPABASE_URL")) else "no")
     app.logger.info("Supabase public key configured: %s", "yes" if configured(app.config.get("SUPABASE_PUBLISHABLE_KEY")) else "no")
     app.logger.info("Supabase privileged key configured: %s", "yes" if configured(app.config.get("SUPABASE_SECRET_KEY")) else "no")
+    app.logger.info("Database configured: %s", "yes" if configured(app.config.get("DATABASE_URL")) else "no")
     validate_production_config(app)
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
     Path(app.config["UPLOAD_FOLDER"]).mkdir(parents=True, exist_ok=True)
@@ -58,7 +59,15 @@ def validate_production_config(app):
         return
     if app.config.get("ENV") != "production" and app.config.get("FLASK_ENV") != "production":
         return
-    required = ("SUPABASE_URL", "SUPABASE_PUBLISHABLE_KEY", "SUPABASE_SECRET_KEY", "DATABASE_URL")
+    required = (
+        "DATABASE_URL",
+        "SUPABASE_URL",
+        "SUPABASE_PUBLISHABLE_KEY",
+        "SUPABASE_SECRET_KEY",
+        "SUPABASE_EMAIL_REDIRECT_URL",
+        "SUPABASE_STORAGE_BUCKET",
+        "ADMIN_EMAILS",
+    )
     missing = [name for name in required if not configured(app.config.get(name))]
     if not app.config.get("SUPABASE_AUTH_ENABLED"):
         missing.append("SUPABASE_AUTH_ENABLED=true")
@@ -152,7 +161,12 @@ def register_handlers(app):
     @app.errorhandler(500)
     def server_error(error):
         db.session.rollback()
-        app.logger.exception("Unhandled request failure id=%s", getattr(g, "request_id", "-"))
+        original = getattr(error, "original_exception", None) or error
+        app.logger.error(
+            "unhandled_request_failure request_id=%s error_type=%s",
+            getattr(g, "request_id", "-"),
+            type(original).__name__,
+        )
         return render_template("errors/500.html"), 500
 
 
