@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Assessment History{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">History</p><h1>Career assessments</h1></section>
+{% if assessments %}
+<div class="table-wrap"><table><thead><tr><th>Career</th><th>Match</th><th>Date</th><th></th></tr></thead><tbody>
+{% for item in assessments %}<tr><td>{{ item.recommended_career }}</td><td>{{ item.confidence_score }}%</td><td>{{ item.created_at.strftime('%Y-%m-%d') }}</td><td><a href="{{ url_for('career.result', assessment_id=item.id) }}">Open</a></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty">No assessments yet.</div>{% endif %}
+{% endblock %}

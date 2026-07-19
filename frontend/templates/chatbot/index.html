@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}AI Career Chatbot{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">AI Career Chatbot</p><h1>CareerPath Assistant</h1><p class="muted">Private guidance for careers, resumes, interviews, learning resources, and project ideas.</p></section>
+<section class="chat-layout">
+  <aside class="panel chat-sidebar">
+    <form method="post" action="{{ url_for('chatbot.new_conversation') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button" type="submit">New chat</button></form>
+    {% for item in conversations %}<a class="chat-link" href="{{ url_for('chatbot.conversation_view', conversation_id=item.id) }}">Conversation {{ item.id }}</a>{% endfor %}
+  </aside>
+  <section class="panel chat-panel">
+    <div class="actions">
+      <form method="post" action="{{ url_for('chatbot.archive_conversation', conversation_id=conversation.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Archive conversation</button></form>
+      <form method="post" action="{{ url_for('chatbot.delete_conversation', conversation_id=conversation.id) }}" data-confirm="Delete this conversation?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit" class="button button-secondary">Delete conversation</button></form>
+    </div>
+    <div class="chat-messages">
+      {% for message in conversation.messages %}
+      <article class="chat-message {{ message.role }}"><strong>{{ 'You' if message.role == 'user' else 'CareerPath AI' }}</strong><p>{{ message.content }}</p></article>
+      {% else %}
+      <article class="chat-message assistant"><strong>CareerPath AI</strong><p>Ask me for career guidance, resume assistance, interview preparation, learning recommendations, or project suggestions.</p></article>
+      {% endfor %}
+    </div>
+    <form class="chat-form" method="post">
+      {{ form.hidden_tag() }}
+      {{ form.message(rows=3, placeholder="Example: Help me prepare for a backend developer interview") }}
+      {{ form.submit(class="button") }}
+    </form>
+  </section>
+</section>
+{% endblock %}

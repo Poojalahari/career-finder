@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Create account{% endblock %}
+{% block content %}
+<section class="auth-panel auth-premium">
+  <div>
+    <p class="eyebrow">CareerPath ATS</p>
+    <h1>Create a secure account</h1>
+    <p class="muted">Create your private career workspace securely.</p>
+  </div>
+  <form class="form-card glass-form" method="post" novalidate data-loading-form>
+    {{ form.hidden_tag() }}
+    <label>{{ form.full_name.label }} {{ form.full_name(autocomplete="name") }}</label>
+    {% for e in form.full_name.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+    <label>{{ form.email.label }} {{ form.email(autocomplete="email") }}</label>
+    {% for e in form.email.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+    <label>{{ form.password.label }} {{ form.password(autocomplete="new-password") }}</label>
+    {% for e in form.password.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+    <label>{{ form.confirm_password.label }} {{ form.confirm_password(autocomplete="new-password") }}</label>
+    {% for e in form.confirm_password.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+    {{ form.submit(class="button", data_submit_label="Creating account…") }}
+    <p class="muted">Already registered? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Profile</p><h1>{{ current_user.full_name }}</h1><p class="muted">Manage identity, account health, notifications, password, and account deletion.</p></section>
+<section class="two-col">
+  <form class="form-card" method="post">
+    {{ profile_form.hidden_tag() }}
+    <h2>Account</h2>
+    <label>{{ profile_form.full_name.label }} {{ profile_form.full_name() }}</label>
+    <label>{{ profile_form.email.label }} {{ profile_form.email() }}</label>
+    <p class="muted">Joined {{ current_user.created_at.strftime('%Y-%m-%d') }} · Last login {{ current_user.last_login_at.strftime('%Y-%m-%d %H:%M') if current_user.last_login_at else 'First session' }}</p>
+    {{ profile_form.submit(class="button") }}
+  </form>
+  <form class="form-card" method="post">
+    {{ password_form.hidden_tag() }}
+    <h2>Change password</h2>
+    <label>{{ password_form.current_password.label }} {{ password_form.current_password() }}</label>
+    <label>{{ password_form.new_password.label }} {{ password_form.new_password() }}</label>
+    <label>{{ password_form.confirm_password.label }} {{ password_form.confirm_password() }}</label>
+    {{ password_form.submit(class="button") }}
+  </form>
+</section>
+<section class="two-col">
+  <div class="panel"><h2>Notifications</h2><p class="muted">In-app notifications are enabled for scan completion, report availability, roadmap progress, resume scoring, and interview reports.</p><div class="chips"><span>Scan alerts</span><span>Roadmap reminders</span><span>Resume scores</span><span>Interview reports</span></div></div>
+  <form class="form-card danger-zone" method="post" data-confirm="Delete your account and all owned data?">
+    {{ delete_form.hidden_tag() }}
+    <h2>Delete account</h2>
+    <p class="muted">This removes your account, database records, and private uploaded resume files.</p>
+    <label>{{ delete_form.confirmation.label }} {{ delete_form.confirmation(placeholder="DELETE") }}</label>
+    <label>{{ delete_form.password.label }} {{ delete_form.password() }}</label>
+    {{ delete_form.submit(class="button button-secondary") }}
+  </form>
+</section>
+{% endblock %}

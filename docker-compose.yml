@@ -1,0 +1,27 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Backend/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      FLASK_ENV: production
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY}
+      DATABASE_URL: ${DATABASE_URL}
+      SUPABASE_AUTH_ENABLED: "true"
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_PUBLISHABLE_KEY: ${SUPABASE_PUBLISHABLE_KEY}
+      SUPABASE_SECRET_KEY: ${SUPABASE_SECRET_KEY}
+      SUPABASE_EMAIL_REDIRECT_URL: ${SUPABASE_EMAIL_REDIRECT_URL}
+      SUPABASE_STORAGE_BUCKET: career-documents
+      SESSION_REDIS_URL: ${SESSION_REDIS_URL:-}
+    volumes:
+      - career-instance:/workspace/Backend/instance
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  career-instance:

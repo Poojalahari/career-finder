@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Privacy{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Privacy</p><h1>Data controls</h1><p class="muted">Sensitive resume files stay private and can be removed by deleting their scan.</p></section>
+<section class="two-col">
+  <div class="panel"><h2>Private storage</h2><p>Resume files are stored outside static assets with generated filenames and ownership checks.</p><a class="button" href="{{ url_for('ats.history') }}">Manage scan history</a></div>
+  <div class="panel"><h2>Retention</h2><p>Analysis results are retained for your dashboard history. Raw extracted resume text is not stored by default.</p><div class="mini-bar emerald"><i style="width:100%"></i></div></div>
+</section>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Interview Prep | CareerPath ATS{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">AI Interview Preparation</p><h1>Interview Prep</h1><p class="muted">Practice targeted questions and run timed mock interviews from one saved workspace.</p></section>
+<nav class="tabs" aria-label="Interview modes">
+  <a class="{{ 'active' if mode == 'prep' else '' }}" href="{{ url_for('growth.interview_prep', mode='prep') }}">Practice Questions</a>
+  <a class="{{ 'active' if mode == 'mock' else '' }}" href="{{ url_for('growth.interview_prep', mode='mock') }}">Mock Interview</a>
+  <a href="#interview-history">History</a>
+</nav>
+{% include "growth/partials/interview_setup.html" %}
+{% endblock %}

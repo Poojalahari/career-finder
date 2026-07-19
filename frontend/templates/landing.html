@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}CareerPath ATS{% endblock %}
+{% block body_class %}landing-body{% endblock %}
+{% block content %}
+<section class="landing-hero" data-hyperspeed>
+  <canvas class="hyperspeed-canvas" data-hyperspeed-canvas aria-hidden="true"></canvas>
+  <canvas class="light-rays-canvas" data-light-rays-canvas aria-hidden="true"></canvas>
+  <div class="landing-overlay">
+    <div class="landing-copy">
+      <p class="landing-kicker">AI-ready career guidance</p>
+      <h1>Scan your resume. Match the role. Choose your next career path.</h1>
+      <p>
+        CareerPath ATS combines secure resume analysis, transparent ATS scoring,
+        career roadmaps, learning resources, resume building, and interview preparation in one private workspace.
+      </p>
+      <div class="landing-actions">
+        <a class="button landing-primary" href="{{ url_for('auth.register') }}">Start free</a>
+        <a class="button landing-secondary" href="{{ url_for('auth.login') }}">Login</a>
+      </div>
+    </div>
+    <div class="landing-card" aria-label="Product highlights">
+      <span class="scan-line"></span>
+      <p class="card-label">Live compatibility preview</p>
+      <strong>ATS Score 86</strong>
+      <div class="landing-meter"><span style="width:86%"></span></div>
+      <ul>
+        <li>PDF-only secure uploads</li>
+        <li>Job-description keyword match</li>
+        <li>Roadmaps, resume builder, and interview reports</li>
+      </ul>
+    </div>
+  </div>
+  <div class="landing-hint">Press and hold anywhere to accelerate the background</div>
+</section>
+{% endblock %}

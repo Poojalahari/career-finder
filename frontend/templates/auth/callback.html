@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Confirming your email{% endblock %}
+{% block content %}
+<section class="auth-panel auth-premium" data-auth-callback data-csrf-token="{{ csrf_token() }}">
+  <div>
+    <p class="eyebrow">CareerPath ATS</p>
+    <h1>Confirming your email…</h1>
+    <p class="muted" data-auth-callback-status>Please wait while we open your dashboard.</p>
+  </div>
+</section>
+{% endblock %}

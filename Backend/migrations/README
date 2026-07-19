@@ -1,0 +1,1 @@
+Flask-Migrate is initialized for this project. Run `flask db init` only if recreating migrations from scratch.

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}CareerPath ATS{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#content">Skip to content</a>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="shell">
+    {% if current_user.is_authenticated %}
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{{ url_for('dashboard.index') }}"><span class="brand-mark">C</span>CareerPath ATS</a>
+      <nav aria-label="Primary" data-sidebar-nav>
+        <a href="{{ url_for('dashboard.index') }}">Dashboard</a>
+        <a href="{{ url_for('career.assess') }}">Career Assessment</a>
+        <a href="{{ url_for('career.history') }}">Assessment History</a>
+        <a href="{{ url_for('ats.scan') }}">ATS Scanner</a>
+        <a href="{{ url_for('ats.history') }}">Scan History</a>
+        <a href="{{ url_for('growth.roadmap') }}">AI Roadmap</a>
+        <a href="{{ url_for('growth.learning') }}">Learning Hub</a>
+        <a href="{{ url_for('growth.resume_builder') }}">Resume Builder</a>
+        <a href="{{ url_for('growth.interview_prep') }}">Interview Prep</a>
+        <a href="{{ url_for('chatbot.index') }}">AI Chatbot</a>
+        <a href="{{ url_for('analytics.index') }}">Analytics</a>
+        <a href="{{ url_for('dashboard.profile') }}">Profile</a>
+        <a href="{{ url_for('dashboard.privacy') }}">Privacy</a>
+      </nav>
+    </aside>
+    {% endif %}
+    <main class="main" id="content">
+      <header class="topbar">
+        {% if current_user.is_authenticated %}
+        <button class="icon-button" data-menu-toggle aria-controls="sidebar" aria-expanded="false">Menu</button>
+        <div class="topbar-title">
+          <span class="muted">Workspace</span>
+          <strong>{{ current_user.full_name }}</strong>
+        </div>
+        <div class="topbar-actions">
+          <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle dark mode">Theme</button>
+          <form method="post" action="{{ url_for('auth.logout') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="button button-secondary" type="submit">Logout</button>
+          </form>
+        </div>
+        {% else %}
+        <a class="brand" href="{{ url_for('home') }}"><span class="brand-mark">C</span>CareerPath ATS</a>
+        <nav class="public-nav" aria-label="Public">
+          <a href="{{ url_for('auth.login') }}">Login</a>
+          <a class="button" href="{{ url_for('auth.register') }}">Create account</a>
+        </nav>
+        {% endif %}
+      </header>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="alerts">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

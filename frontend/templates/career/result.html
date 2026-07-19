@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Career Result{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Best match</p><h1>{{ result.top.title }} <span class="badge">{{ result.top.match_percentage }}%</span></h1><p>{{ result.top.description }}</p></section>
+<div class="score-panel result-hero"><div class="score-ring" style="--score:{{ result.top.match_percentage }}">{{ result.top.match_percentage }}%</div><div><h2>Career fit analysis</h2><p>{{ result.top.explanation }}</p><p class="muted">{{ result.top.salary_disclaimer }}</p></div></div>
+<section class="two-col">
+  <div class="panel"><h2>Matched skills</h2><div class="chips">{% for s in result.top.matched_skills %}<span>{{ s }}</span>{% else %}<span>None yet</span>{% endfor %}</div></div>
+  <div class="panel"><h2>Skills to build</h2><div class="chips missing">{% for s in result.top.missing_skills %}<span>{{ s }}</span>{% endfor %}</div></div>
+</section>
+<div class="panel"><h2>Roadmap</h2><ol>{% for step in result.top.roadmap %}<li>{{ step }}</li>{% endfor %}</ol></div>
+<div class="panel"><h2>Recommended projects</h2><ul>{% for project in result.top.projects %}<li>{{ project }}</li>{% endfor %}</ul></div>
+<div class="panel"><h2>Alternatives</h2><div class="chips">{% for alt in result.alternatives %}<span>{{ alt.title }} {{ alt.match_percentage }}%</span>{% endfor %}</div></div>
+{% endblock %}

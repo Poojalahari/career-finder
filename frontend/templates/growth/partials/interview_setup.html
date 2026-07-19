@@ -1,0 +1,16 @@
+<form class="form-card wide" method="post" data-loading-form>
+  {{ form.hidden_tag() }}
+  <input type="hidden" name="mode" value="{{ mode }}">
+  <section class="two-col form-split">
+    <label>{{ form.category.label }} {{ form.category() }}</label>
+    <label>{{ form.difficulty.label }} {{ form.difficulty() }}</label>
+  </section>
+  {{ form.submit(class="button", value="Start Mock Interview" if mode == "mock" else "Start Practice Session", **{"data-submit-label": "Starting..."}) }}
+</form>
+<section class="panel" id="interview-history"><h2>History</h2>
+{% if sessions %}
+<div class="table-wrap"><table><thead><tr><th>Mode</th><th>Category</th><th>Difficulty</th><th>Technical</th><th>Date</th><th></th></tr></thead><tbody>
+{% for session in sessions %}<tr><td>{{ 'Mock Interview' if session.mode == 'mock' else 'Practice' }}</td><td>{{ session.category }}</td><td>{{ session.difficulty }}</td><td>{{ session.technical_score }}</td><td>{{ session.created_at.strftime('%Y-%m-%d') }}</td><td><a href="{{ url_for('growth.interview_report', session_id=session.id) }}">View details</a></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty">No sessions yet.</div>{% endif %}
+</section>

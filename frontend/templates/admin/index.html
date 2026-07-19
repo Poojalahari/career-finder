@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Admin Portal{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Privacy-first admin</p><h1>System overview</h1><p class="muted">Aggregate operational metrics only. This portal never displays passwords, password hashes, uploaded resumes, private conversations, or sensitive personal information.</p></section>
+<section class="stats-grid">
+  <div class="stat"><span>Total users</span><strong>{{ metrics.total_users }}</strong></div>
+  <div class="stat"><span>Active users</span><strong>{{ metrics.active_users }}</strong><small>Last 30 days</small></div>
+  <div class="stat"><span>Avg ATS</span><strong>{{ metrics.avg_ats }}</strong><div class="mini-bar emerald"><i style="width:{{ metrics.avg_ats }}%"></i></div></div>
+  <div class="stat"><span>Avg interview</span><strong>{{ metrics.avg_interview }}</strong><div class="mini-bar"><i style="width:{{ metrics.avg_interview }}%"></i></div></div>
+  <div class="stat"><span>Learning avg</span><strong>{{ metrics.avg_learning }}%</strong></div>
+  <div class="stat"><span>New users</span><strong>{{ metrics.new_users_30d }}</strong><small>Last 30 days</small></div>
+</section>
+<section class="two-col">
+  <div class="panel"><h2>Feature usage</h2>{% for label, value in feature_usage %}<div class="meter"><span>{{ label }}</span><progress value="{{ value }}" max="{{ metrics.total_users or 1 }}"></progress><strong>{{ value }}</strong></div>{% endfor %}</div>
+  <div class="panel"><h2>Popular careers</h2>{% for career, value in metrics.popular_careers %}<p><strong>{{ career }}</strong> · {{ value }} recommendations</p>{% else %}<div class="empty">No career data yet.</div>{% endfor %}</div>
+</section>
+<section class="two-col">
+  <div class="panel"><h2>Content management</h2><p>Career taxonomy categories observed: {{ taxonomy_count }}.</p><p class="muted">Use repository-managed taxonomy files for reviewed content changes.</p></div>
+  <div class="panel"><h2>System health</h2><p>Database tables tracked: {{ metrics.db_tables }}</p><p class="muted">Health endpoint: <code>/health</code>. Reports and announcements can be managed as aggregate, non-sensitive content.</p></div>
+</section>
+{% endblock %}

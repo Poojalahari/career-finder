@@ -1,0 +1,14 @@
+{
+  "name": "careerpath-ats",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CareerPath ATS development launcher",
+  "scripts": {
+    "dev": "node Backend/dev.mjs",
+    "dev:backend": "node Backend/dev.mjs",
+    "build": "node --check Backend/dev.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

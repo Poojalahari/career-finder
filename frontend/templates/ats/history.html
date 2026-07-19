@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Scan History{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">History</p><h1>Resume scans</h1></section>
+{% if scans %}
+<div class="table-wrap"><table><thead><tr><th>Resume</th><th>Job</th><th>Status</th><th>Score</th><th>Date</th><th></th></tr></thead><tbody>
+{% for scan in scans %}<tr><td>{{ scan.original_filename }}</td><td>{{ scan.job_title or 'General' }}</td><td>{{ scan.status|title }}</td><td>{{ scan.overall_score if scan.overall_score is not none else '-' }}</td><td>{{ scan.created_at.strftime('%Y-%m-%d') }}</td><td class="row-actions">{% if scan.status == 'completed' %}<a href="{{ url_for('ats.result', scan_id=scan.id) }}">Open</a><a href="{{ url_for('ats.resume', scan_id=scan.id) }}">Resume</a>{% endif %}<form method="post" action="{{ url_for('ats.delete', scan_id=scan.id) }}" data-confirm="Delete this scan and private PDF?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="link-button" type="submit">Delete</button></form></td></tr>{% endfor %}
+</tbody></table></div>
+{% else %}<div class="empty">No scans yet.</div>{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Interview Report{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Final report</p><h1>{{ session.category|title }} interview</h1><p class="muted">{{ session.final_report or 'Complete the session to generate a report.' }}</p></section>
+<section class="stats-grid">
+  <div class="stat"><span>Technical</span><strong>{{ session.technical_score }}</strong><div class="mini-bar emerald"><i style="width:{{ session.technical_score }}%"></i></div></div>
+  <div class="stat"><span>Communication</span><strong>{{ session.communication_score }}</strong><div class="mini-bar"><i style="width:{{ session.communication_score }}%"></i></div></div>
+  <div class="stat"><span>Grammar</span><strong>{{ session.grammar_score }}</strong><div class="mini-bar"><i style="width:{{ session.grammar_score }}%"></i></div></div>
+  <div class="stat"><span>Mode</span><strong class="stat-text">{{ session.mode|title }}</strong><small>{{ session.difficulty|title }}</small></div>
+</section>
+<section class="panel"><h2>Answers</h2>{% for answer in session.answers_json %}<p><strong>{{ loop.index }}.</strong> {{ answer }}</p>{% else %}<div class="empty">No answers submitted yet.</div>{% endfor %}</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}ATS Scanner{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">ATS scanner</p><h1>Analyze one PDF resume</h1><p>Scores are advisory and based on extracted resume text.</p></section>
+<form class="form-card wide" method="post" action="{{ url_for('ats.scan') }}" enctype="multipart/form-data" data-loading-form data-max-bytes="{{ config.MAX_CONTENT_LENGTH }}" novalidate>
+  {{ form.hidden_tag() }}
+  <div class="upload-card" data-pdf-upload>
+    <label class="upload-dropzone" for="{{ form.resume.id }}">
+      <span class="upload-icon">PDF</span>
+      <strong>Drop your resume here or browse</strong>
+      <span>PDF only · maximum {{ (config.MAX_CONTENT_LENGTH // 1024 // 1024) if config.MAX_CONTENT_LENGTH else 8 }} MB · server-side validation always applies</span>
+      {{ form.resume(accept=".pdf,application/pdf", class="sr-only", **{"data-pdf-input": ""}) }}
+    </label>
+    <div class="upload-status" data-pdf-status>
+      <strong>No PDF selected</strong>
+      <span>Selected locally. Click Analyze Resume to upload and scan.</span>
+    </div>
+    <div class="upload-file" data-pdf-file hidden>
+      <div><strong data-pdf-name></strong><span data-pdf-size></span></div>
+      <span class="status-good">PDF selected</span>
+      <button type="button" class="button button-secondary" data-pdf-replace>Replace</button>
+      <button type="button" class="button button-secondary" data-pdf-remove>Remove</button>
+    </div>
+    <small class="field-error" data-pdf-error></small>
+  </div>
+  {% for e in form.resume.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+  {% if upload_error %}<small class="field-error">{{ upload_error }}</small>{% endif %}
+  <label>{{ form.job_title.label }} {{ form.job_title(placeholder="Backend Developer") }}</label>
+  <label>{{ form.job_description.label }} {{ form.job_description(rows=8, placeholder="Paste the full job description for keyword matching.") }}</label>
+  {{ form.submit(class="button", disabled=true, **{"data-submit-label": "Uploading and analyzing..."}) }}
+</form>
+{% endblock %}

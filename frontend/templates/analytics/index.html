@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Dashboard Analytics{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Dashboard Analytics</p><h1>Performance insights</h1><p class="muted">Career compatibility, ATS trends, learning progress, interview performance, and skill progress.</p></section>
+<section class="stats-grid">
+  <div class="stat"><span>Learning progress</span><strong>{{ progress_avg }}%</strong><div class="mini-bar emerald"><i style="width:{{ progress_avg }}%"></i></div></div>
+  <div class="stat"><span>ATS scans</span><strong>{{ scans|length }}</strong><small>Trend points</small></div>
+  <div class="stat"><span>Career checks</span><strong>{{ assessments|length }}</strong><small>Compatibility history</small></div>
+  <div class="stat"><span>Interviews</span><strong>{{ interviews|length }}</strong><small>Practice reports</small></div>
+</section>
+<section class="two-col">
+  <div class="panel"><h2>ATS trends</h2><div class="chart-bars">{% for scan in scans %}<span style="height:{{ scan.overall_score }}%" title="{{ scan.original_filename }} {{ scan.overall_score }}"></span>{% else %}<div class="empty">No ATS scans yet.</div>{% endfor %}</div></div>
+  <div class="panel"><h2>Career compatibility</h2>{% for item in assessments %}<div class="meter"><span>{{ item.recommended_career }}</span><progress value="{{ item.confidence_score }}" max="100"></progress><strong>{{ item.confidence_score }}%</strong></div>{% else %}<div class="empty">No career assessments yet.</div>{% endfor %}</div>
+</section>
+<section class="two-col">
+  <div class="panel"><h2>Interview performance</h2>{% for item in interviews %}<div class="meter"><span>{{ item.category|title }}</span><progress value="{{ item.technical_score }}" max="100"></progress><strong>{{ item.technical_score }}</strong></div>{% else %}<div class="empty">No interviews yet.</div>{% endfor %}</div>
+  <div class="panel"><h2>Skill progress</h2>{% for item in skill_progress %}<div class="meter"><span>{{ item.title }}</span><progress value="{{ item.progress }}" max="100"></progress><strong>{{ item.progress }}%</strong></div>{% else %}<div class="empty">No roadmap progress yet.</div>{% endfor %}</div>
+</section>
+{% endblock %}

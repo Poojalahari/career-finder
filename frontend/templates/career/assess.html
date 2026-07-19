@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Career Assessment{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Career assessment</p><h1>Find a realistic path</h1></section>
+<form class="form-card wide" method="post" novalidate>
+  {{ form.hidden_tag() }}
+  <label>{{ form.skills.label }} {{ form.skills(rows=4, placeholder="Python, SQL, Figma, AWS...") }}</label>
+  {% for e in form.skills.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+  <label>{{ form.interests.label }} {{ form.interests(rows=4, placeholder="AI, business analysis, cloud, design...") }}</label>
+  {% for e in form.interests.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+  <label>{{ form.cgpa.label }} {{ form.cgpa(step="0.01", min="0", max="10") }}</label>
+  {% for e in form.cgpa.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+  <label>{{ form.certifications.label }} {{ form.certifications(placeholder="AWS Cloud Practitioner, Google UX...") }}</label>
+  {% for e in form.certifications.errors %}<small class="field-error">{{ e }}</small>{% endfor %}
+  {{ form.submit(class="button") }}
+</form>
+{% endblock %}

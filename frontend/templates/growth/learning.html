@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Learning Hub | CareerPath ATS{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="eyebrow">Beginner Learning Hub</p>
+  <h1>Learning Hub</h1>
+  <p class="muted">Choose one of eight beginner programming languages, track lesson progress, and open trusted coding practice platforms.</p>
+</section>
+<form class="form-card wide filter-form" method="get" data-loading-form>
+  <section class="two-col form-split">
+    <label>Search <input name="q" value="{{ request.args.get('q','') }}" placeholder="Search Python, Java, Programiz, Exercism, HackerRank, or topics"></label>
+    <label>Language Filter
+      <select name="language">
+        <option value="">All Languages</option>
+        {% for option in filter_options.languages %}<option value="{{ option }}" {% if request.args.get('language', learning_track) == option %}selected{% endif %}>{{ option }}</option>{% endfor %}
+      </select>
+    </label>
+  </section>
+  <div class="actions">
+    <button class="button" type="submit" data-submit-label="Filtering...">Filter Languages</button>
+    <a class="button button-secondary" href="{{ url_for('growth.learning') }}">Clear Filters</a>
+  </div>
+  <p class="muted">{{ result_count }} language{{ '' if result_count == 1 else 's' }} and {{ platform_count }} coding platform{{ '' if platform_count == 1 else 's' }} found.</p>
+  {% if active_filters %}<div class="chips">{% for label, value in active_filters %}<span>{{ label }}: {{ value }}</span>{% endfor %}</div>{% endif %}
+</form>
+<section class="page-head compact">
+  <h2>Language Cards</h2>
+  <p class="muted">Start with concepts, then use the coding platforms below for hands-on practice.</p>
+</section>
+<section class="resource-grid">
+{% for card in language_cards %}
+  {% set item = card.resource %}
+  <article class="panel resource-card">
+    <span class="badge">Beginner</span>
+    <h3>{{ card.language }}</h3>
+    <p>{{ card.description }}</p>
+    <p class="muted">{{ card.total_count }} basic topics &middot; {{ card.status }}</p>
+    <progress value="{{ card.progress }}" max="100" aria-label="Progress for {{ card.language }}"></progress>
+    <p><strong>Progress:</strong> {{ card.progress }}% based on completed lessons</p>
+    <strong>Basic topics</strong>
+    <ul>
+      {% for topic in card.topics %}<li>{{ topic }}</li>{% endfor %}
+    </ul>
+    <div class="actions">
+      <form method="post" action="{{ url_for('growth.learning_action', resource_id=item.id, action='start') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Start Learning</button></form>
+      <a class="button button-secondary" href="{{ url_for('growth.roadmap') }}?language={{ card.language }}">View Details</a>
+    </div>
+  </article>
+{% else %}
+  <div class="empty">No approved language matches your filter. Clear the search and try again.</div>
+{% endfor %}
+</section>
+<section class="page-head compact">
+  <h2>Coding Platforms</h2>
+  <p class="muted">Practice the selected language on beginner-friendly platforms. These links stay inside the approved language list.</p>
+</section>
+<section class="resource-grid">
+{% for platform in platform_cards %}
+  <article class="panel resource-card">
+    <span class="badge">{{ platform.difficulty }}</span>
+    <h3>{{ platform.name }}</h3>
+    <p>{{ platform.description }}</p>
+    <p class="muted">{{ platform.cost }} &middot; Best for: {{ platform.best_for }}</p>
+    <strong>Supported languages</strong>
+    <div class="chips">
+      {% for language in platform.supported_languages %}<span>{{ language }}</span>{% endfor %}
+    </div>
+    <div class="actions">
+      <a class="button" href="{{ platform.practice_url }}" target="_blank" rel="noopener noreferrer">Start Practice</a>
+      {% if platform.active_language %}
+        <a class="button button-secondary" href="{{ url_for('growth.roadmap') }}?language={{ platform.active_language }}">Use With {{ platform.active_language }} Roadmap</a>
+      {% else %}
+        <a class="button button-secondary" href="{{ platform.url }}" target="_blank" rel="noopener noreferrer">View Platform</a>
+      {% endif %}
+    </div>
+  </article>
+{% else %}
+  <div class="empty">No coding platform matches this filter. Try another approved language or clear the search.</div>
+{% endfor %}
+</section>
+{% endblock %}

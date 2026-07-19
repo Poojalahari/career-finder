@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Resume Builder{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Professional ATS Resume Builder</p><h1>Create, score, and export your resume</h1><p class="muted">Choose an ATS-friendly template, edit content, preview quality, and download a PDF.</p></section>
+<form class="form-card wide" method="post">
+  {{ form.hidden_tag() }}
+  <section class="two-col form-split">
+    <label>{{ form.title.label }} {{ form.title() }}</label>
+    <label>{{ form.template.label }} {{ form.template() }}</label>
+    <label>{{ form.name.label }} {{ form.name() }}</label>
+    <label>{{ form.email.label }} {{ form.email() }}</label>
+    <label>{{ form.phone.label }} {{ form.phone() }}</label>
+    <label>{{ form.links.label }} {{ form.links() }}</label>
+  </section>
+  <label>{{ form.summary.label }} {{ form.summary(rows=4) }}</label>
+  <label>{{ form.skills.label }} {{ form.skills(rows=3, placeholder="Python, SQL, Flask, PostgreSQL") }}</label>
+  <label>{{ form.experience.label }} {{ form.experience(rows=7, placeholder="Built APIs, improved latency by 30%, led deployments...") }}</label>
+  <label>{{ form.projects.label }} {{ form.projects(rows=4) }}</label>
+  <label>{{ form.education.label }} {{ form.education(rows=3) }}</label>
+  {{ form.submit(class="button") }}
+</form>
+<section class="panel"><h2>Saved resumes</h2>
+{% if documents %}
+  <div class="table-wrap"><table><thead><tr><th>Title</th><th>Template</th><th>Score</th><th></th></tr></thead><tbody>
+  {% for doc in documents %}<tr><td>{{ doc.title }}</td><td>{{ doc.template }}</td><td><span class="score-pill">{{ doc.ats_score }}</span></td><td><a href="{{ url_for('growth.resume_preview', document_id=doc.id) }}">Preview</a></td></tr>{% endfor %}
+  </tbody></table></div>
+{% else %}<div class="empty">No resumes built yet.</div>{% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Resume Preview{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">Resume Preview</p><h1>{{ document.title }} <span class="badge">{{ document.ats_score }}/100</span></h1><p class="muted">ATS optimization score before download.</p></section>
+<section class="two-col">
+  <article class="resume-preview panel {{ document.template }}">
+    <h2>{{ document.content_json.name }}</h2><p>{{ document.content_json.email }} · {{ document.content_json.phone }} · {{ document.content_json.links }}</p>
+    <h3>Summary</h3><p>{{ document.content_json.summary }}</p>
+    <h3>Skills</h3><p>{{ document.content_json.skills }}</p>
+    <h3>Experience</h3><p>{{ document.content_json.experience }}</p>
+    <h3>Projects</h3><p>{{ document.content_json.projects }}</p>
+    <h3>Education</h3><p>{{ document.content_json.education }}</p>
+  </article>
+  <aside class="panel"><h2>Optimization tips</h2><ul>{% for tip in document.optimization_tips %}<li>{{ tip }}</li>{% else %}<li>This resume is in strong ATS shape.</li>{% endfor %}</ul><a class="button" href="{{ url_for('growth.resume_download', document_id=document.id) }}">Download PDF</a></aside>
+</section>
+{% endblock %}

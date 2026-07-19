@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}ATS Result{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">ATS result</p><h1>{{ scan.original_filename }}</h1><p>{{ analysis.summary }}</p></section>
+<section class="score-panel result-hero"><div class="score-ring" style="--score:{{ scan.overall_score }}">{{ scan.overall_score }}</div><div><p class="eyebrow">Overall score</p><h2>{{ analysis.score_band }}</h2><p>Compatibility score based on extracted resume text, section completeness, readability, and keyword evidence.</p></div></section>
+<section class="two-col">
+  <div class="panel"><h2>Matched keywords</h2><div class="chips">{% for k in scan.matched_keywords %}<span>{{ k }}</span>{% else %}<span>No job description match terms</span>{% endfor %}</div></div>
+  <div class="panel"><h2>Missing keywords</h2><div class="chips missing">{% for k in scan.missing_keywords %}<span>{{ k }}</span>{% else %}<span>No missing target keywords</span>{% endfor %}</div></div>
+</section>
+<section class="two-col">
+  <div class="panel"><h2>Skills found</h2><div class="chips">{% for k in analysis.resume_keywords[:18] %}<span>{{ k }}</span>{% else %}<span>No skills detected</span>{% endfor %}</div></div>
+  <div class="panel"><h2>Job-description match</h2><p><strong>{{ analysis.skill_match_percentage }}%</strong> keyword alignment.</p><p class="muted">Experience: {{ 'present' if analysis.sections.experience else 'missing' }} · Education: {{ 'present' if analysis.sections.education else 'missing' }}</p></div>
+</section>
+<section class="two-col">
+  <div class="panel"><h2>Formatting observations</h2><ul><li>Long paragraphs: {{ analysis.warnings.long_paragraphs }}</li><li>Table or column risk: {{ 'Yes' if analysis.warnings.table_or_columns_risk else 'No' }}</li><li>Keyword stuffing: {{ analysis.warnings.keyword_stuffing|join(', ') if analysis.warnings.keyword_stuffing else 'No obvious stuffing' }}</li></ul></div>
+  <div class="panel"><h2>Experience and education</h2><ul><li>Experience section: {{ 'Detected' if analysis.sections.experience else 'Missing' }}</li><li>Education section: {{ 'Detected' if analysis.sections.education else 'Missing' }}</li><li>Certifications: {{ 'Detected' if analysis.sections.certifications else 'Missing' }}</li></ul></div>
+</section>
+<div class="panel"><h2>Section scores</h2>{% for name, value in scan.section_scores.items() %}<div class="meter"><span>{{ name }}</span><progress value="{{ value }}" max="100"></progress><strong>{{ value }}</strong></div>{% endfor %}</div>
+<section class="two-col">
+  <div class="panel"><h2>Strengths</h2><ul>{% for item in analysis.strengths %}<li>{{ item }}</li>{% else %}<li>No strong signals yet. Add clearer sections and measurable achievements.</li>{% endfor %}</ul></div>
+  <div class="panel"><h2>High-priority fixes</h2><ul>{% for item in analysis.priority_recommendations.high %}<li>{{ item }}</li>{% else %}<li>No high-priority issues detected.</li>{% endfor %}</ul></div>
+</section>
+<div class="panel"><h2>Recommendations</h2><ul>{% for r in scan.recommendations %}<li>{{ r }}</li>{% endfor %}</ul></div>
+<div class="actions"><a class="button" href="{{ url_for('ats.report', scan_id=scan.id) }}">Download report</a><a class="button button-secondary" href="{{ url_for('ats.scan') }}">Scan another</a><a class="button button-secondary" href="{{ url_for('ats.history') }}">Back to history</a></div>
+{% endblock %}

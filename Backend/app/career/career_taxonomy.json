@@ -1,0 +1,155 @@
+[
+  {
+    "title": "Data Scientist",
+    "description": "Builds statistical and machine-learning solutions from data.",
+    "skills": ["python", "sql", "statistics", "machine learning", "pandas", "numpy"],
+    "interests": ["data science", "ai", "analytics", "research"],
+    "certifications": ["ibm data science", "google data analytics", "azure ai"],
+    "roadmap": ["Python and SQL", "Statistics", "Machine learning", "Model deployment"],
+    "projects": ["Churn prediction", "Sales forecasting", "Recommendation engine"]
+  },
+  {
+    "title": "Data Analyst",
+    "description": "Turns business data into dashboards, reports, and decisions.",
+    "skills": ["sql", "excel", "power bi", "tableau", "python", "statistics"],
+    "interests": ["analytics", "business", "reporting"],
+    "certifications": ["google data analytics", "microsoft power bi"],
+    "roadmap": ["SQL", "Spreadsheet analysis", "BI dashboards", "Storytelling"],
+    "projects": ["KPI dashboard", "Cohort analysis", "Market report"]
+  },
+  {
+    "title": "Machine Learning Engineer",
+    "description": "Ships reliable ML models into production systems.",
+    "skills": ["python", "machine learning", "mlops", "docker", "apis", "tensorflow"],
+    "interests": ["machine learning", "systems", "automation"],
+    "certifications": ["tensorflow developer", "aws machine learning"],
+    "roadmap": ["ML fundamentals", "APIs", "Docker", "Monitoring"],
+    "projects": ["Model serving API", "Feature pipeline", "Model monitoring"]
+  },
+  {
+    "title": "AI Engineer",
+    "description": "Builds AI-powered applications using models, search, and automation.",
+    "skills": ["python", "llm", "nlp", "machine learning", "apis", "vector database"],
+    "interests": ["ai", "nlp", "automation"],
+    "certifications": ["azure ai", "google cloud ai"],
+    "roadmap": ["Python", "NLP", "Prompting", "Evaluation"],
+    "projects": ["AI assistant", "Semantic search", "Document QA"]
+  },
+  {
+    "title": "Frontend Developer",
+    "description": "Creates accessible, responsive user interfaces.",
+    "skills": ["html", "css", "javascript", "react", "accessibility", "typescript"],
+    "interests": ["web", "design", "ui"],
+    "certifications": ["meta front-end developer"],
+    "roadmap": ["HTML/CSS", "JavaScript", "React", "Testing"],
+    "projects": ["Portfolio", "Dashboard UI", "Design-system components"]
+  },
+  {
+    "title": "Backend Developer",
+    "description": "Builds APIs, data models, and server-side systems.",
+    "skills": ["python", "java", "node.js", "sql", "apis", "postgresql"],
+    "interests": ["backend", "systems", "databases"],
+    "certifications": ["aws developer", "oracle java"],
+    "roadmap": ["HTTP APIs", "Databases", "Auth", "Deployment"],
+    "projects": ["REST API", "Auth service", "Payment workflow"]
+  },
+  {
+    "title": "Full Stack Developer",
+    "description": "Builds complete web applications across frontend and backend.",
+    "skills": ["html", "css", "javascript", "react", "python", "sql", "node.js"],
+    "interests": ["web", "products", "full stack"],
+    "certifications": ["full stack web development"],
+    "roadmap": ["Frontend", "Backend", "Database", "Deployment"],
+    "projects": ["SaaS dashboard", "Job board", "E-commerce app"]
+  },
+  {
+    "title": "Mobile App Developer",
+    "description": "Builds native and cross-platform mobile applications.",
+    "skills": ["flutter", "react native", "android", "ios", "dart", "kotlin"],
+    "interests": ["mobile", "apps", "consumer products"],
+    "certifications": ["android developer"],
+    "roadmap": ["Mobile UI", "State management", "APIs", "Store release"],
+    "projects": ["Expense app", "Habit tracker", "Offline notes"]
+  },
+  {
+    "title": "Software Engineer",
+    "description": "Designs, implements, and maintains software systems.",
+    "skills": ["java", "python", "c++", "data structures", "algorithms", "oop"],
+    "interests": ["programming", "systems", "problem solving"],
+    "certifications": ["oracle java"],
+    "roadmap": ["Programming", "DSA", "Testing", "System design"],
+    "projects": ["CLI tool", "Library package", "Distributed service"]
+  },
+  {
+    "title": "DevOps Engineer",
+    "description": "Automates infrastructure, deployment, and reliability practices.",
+    "skills": ["linux", "docker", "kubernetes", "ci/cd", "aws", "terraform"],
+    "interests": ["automation", "cloud", "operations"],
+    "certifications": ["aws devops", "kubernetes administrator"],
+    "roadmap": ["Linux", "Containers", "CI/CD", "Infrastructure as code"],
+    "projects": ["CI pipeline", "Kubernetes deployment", "Monitoring stack"]
+  },
+  {
+    "title": "Cloud Engineer",
+    "description": "Designs and manages cloud infrastructure.",
+    "skills": ["aws", "azure", "gcp", "networking", "linux", "terraform"],
+    "interests": ["cloud", "infrastructure", "platforms"],
+    "certifications": ["aws cloud practitioner", "azure fundamentals"],
+    "roadmap": ["Cloud basics", "Networking", "IAM", "Automation"],
+    "projects": ["Cloud-hosted app", "Serverless workflow", "VPC design"]
+  },
+  {
+    "title": "Cybersecurity Analyst",
+    "description": "Protects systems by monitoring, testing, and reducing security risks.",
+    "skills": ["network security", "linux", "siem", "ethical hacking", "incident response"],
+    "interests": ["security", "risk", "investigation"],
+    "certifications": ["security+", "ceh"],
+    "roadmap": ["Networking", "Linux", "Threats", "Incident response"],
+    "projects": ["Home SOC lab", "Vulnerability report", "Security playbook"]
+  },
+  {
+    "title": "UI/UX Designer",
+    "description": "Researches and designs intuitive digital product experiences.",
+    "skills": ["figma", "wireframing", "prototyping", "ux research", "accessibility"],
+    "interests": ["design", "users", "products"],
+    "certifications": ["google ux design"],
+    "roadmap": ["Design principles", "Research", "Prototyping", "Portfolio"],
+    "projects": ["App redesign", "Usability study", "Design system"]
+  },
+  {
+    "title": "Product Manager",
+    "description": "Defines product strategy and coordinates teams to ship useful products.",
+    "skills": ["roadmapping", "analytics", "communication", "user research", "prioritization"],
+    "interests": ["product", "business", "users"],
+    "certifications": ["product management"],
+    "roadmap": ["User discovery", "Metrics", "Roadmaps", "Execution"],
+    "projects": ["Product spec", "Market analysis", "Experiment plan"]
+  },
+  {
+    "title": "Business Analyst",
+    "description": "Connects business needs with technical solutions and process improvements.",
+    "skills": ["requirements", "sql", "excel", "process mapping", "communication"],
+    "interests": ["business", "analysis", "operations"],
+    "certifications": ["ecba", "cbap"],
+    "roadmap": ["Requirements", "Process analysis", "SQL", "Stakeholder management"],
+    "projects": ["Requirements document", "Process improvement", "Dashboard brief"]
+  },
+  {
+    "title": "QA Automation Engineer",
+    "description": "Builds automated tests and quality systems for software releases.",
+    "skills": ["testing", "selenium", "python", "pytest", "api testing", "ci/cd"],
+    "interests": ["quality", "automation", "software"],
+    "certifications": ["istqb", "selenium"],
+    "roadmap": ["Testing fundamentals", "Automation", "API tests", "CI integration"],
+    "projects": ["End-to-end test suite", "API test harness", "Regression dashboard"]
+  },
+  {
+    "title": "Database Administrator",
+    "description": "Maintains secure, reliable, and performant database systems.",
+    "skills": ["sql", "postgresql", "mysql", "backup", "performance tuning", "security"],
+    "interests": ["databases", "reliability", "data"],
+    "certifications": ["oracle database", "postgresql"],
+    "roadmap": ["SQL", "Indexes", "Backups", "Monitoring"],
+    "projects": ["Backup plan", "Query tuning report", "Database migration"]
+  }
+]

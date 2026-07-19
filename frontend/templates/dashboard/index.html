@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="page-head">
+  <p class="eyebrow">Dashboard</p>
+  <h1>Your career command center</h1>
+  <p class="muted">Track resume strength, recommendation progress, and your latest activity from one polished workspace.</p>
+</section>
+<section class="stats-grid">
+  <div class="stat"><span>Total scans</span><strong>{{ stats.scan_count }}</strong><small>PDF analyses saved</small></div>
+  <div class="stat"><span>Average ATS</span><strong>{{ stats.avg_score }}</strong><div class="mini-bar"><i style="width:{{ stats.avg_score }}%"></i></div></div>
+  <div class="stat"><span>Highest ATS</span><strong>{{ stats.best_score }}</strong><div class="mini-bar emerald"><i style="width:{{ stats.best_score }}%"></i></div></div>
+  <div class="stat"><span>Latest career</span><strong class="stat-text">{{ stats.latest_career }}</strong><small>{{ stats.assessment_count }} assessments</small></div>
+  <div class="stat"><span>Built resumes</span><strong>{{ stats.resume_count }}</strong><small>ATS-ready documents</small></div>
+  <div class="stat"><span>Interview sessions</span><strong>{{ stats.interview_count }}</strong><small>Practice and mock reports</small></div>
+</section>
+<section class="action-grid">
+  <a class="action-card feature-card" href="{{ url_for('ats.scan') }}"><span class="card-icon">ATS</span><strong>Scan a resume</strong><span>Upload one PDF and compare it to a job description.</span></a>
+  <a class="action-card feature-card" href="{{ url_for('career.assess') }}"><span class="card-icon">AI</span><strong>Start assessment</strong><span>Get an explainable career recommendation.</span></a>
+  <a class="action-card feature-card" href="{{ url_for('growth.roadmap') }}"><span class="card-icon">MAP</span><strong>AI Career Roadmap</strong><span>Beginner-to-advanced plan with progress tracking.</span></a>
+  <a class="action-card feature-card" href="{{ url_for('growth.resume_builder') }}"><span class="card-icon">CV</span><strong>Resume Builder</strong><span>Create ATS-friendly resumes with score before PDF export.</span></a>
+  <a class="action-card feature-card" href="{{ url_for('growth.interview_prep') }}"><span class="card-icon">Q&A</span><strong>Interview Prep</strong><span>Practice questions and timed mock interviews in one workspace.</span></a>
+  <a class="action-card feature-card" href="{{ url_for('chatbot.index') }}"><span class="card-icon">BOT</span><strong>AI Career Chatbot</strong><span>Private guidance for careers, resumes, learning, interviews, and projects.</span></a>
+  <a class="action-card feature-card" href="{{ url_for('analytics.index') }}"><span class="card-icon">AN</span><strong>Analytics Dashboard</strong><span>View ATS trends, skill progress, career compatibility, and interview performance.</span></a>
+</section>
+<section class="two-col">
+  <div class="panel">
+    <h2>Recent scans</h2>
+    {% if scans %}
+      <div class="table-wrap"><table><thead><tr><th>Resume</th><th>Score</th><th></th></tr></thead><tbody>
+      {% for scan in scans %}<tr><td>{{ scan.original_filename }}</td><td><span class="score-pill">{{ scan.overall_score }}</span></td><td><a href="{{ url_for('ats.result', scan_id=scan.id) }}">Open</a></td></tr>{% endfor %}
+      </tbody></table></div>
+    {% else %}<div class="empty">No resume scans yet.</div>{% endif %}
+  </div>
+  <div class="panel">
+    <h2>Recent recommendations</h2>
+    {% if assessments %}
+      <div class="table-wrap"><table><thead><tr><th>Career</th><th>Match</th><th></th></tr></thead><tbody>
+      {% for item in assessments %}<tr><td>{{ item.recommended_career }}</td><td><span class="score-pill">{{ item.confidence_score }}%</span></td><td><a href="{{ url_for('career.result', assessment_id=item.id) }}">Open</a></td></tr>{% endfor %}
+      </tbody></table></div>
+    {% else %}<div class="empty">No career assessments yet.</div>{% endif %}
+  </div>
+</section>
+{% endblock %}

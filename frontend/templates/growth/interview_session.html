@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Interview Session{% endblock %}
+{% block content %}
+<section class="page-head"><p class="eyebrow">{{ session.mode|title }} session</p><h1>{{ session.category|title }} · {{ session.difficulty|title }}</h1><p class="muted">Use concise STAR-style answers. The timer starts when this page opens.</p></section>
+<div class="panel interview-timer" data-interview-timer>Timer: <strong>00:00</strong></div>
+<form class="form-card wide" method="post">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  {% for question in session.questions_json %}
+  <label>{{ loop.index }}. {{ question.prompt }}<textarea name="answer_{{ loop.index0 }}" rows="4" required></textarea></label>
+  {% endfor %}
+  <button class="button" type="submit">Submit for evaluation</button>
+</form>
+{% endblock %}
