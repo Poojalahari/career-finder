@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: career-finder
+    runtime: python
+    plan: free
+    buildCommand: pip install -r Backend/requirements.txt
+    startCommand: flask --app Backend/wsgi.py db upgrade -d Backend/migrations && gunicorn --chdir Backend --bind 0.0.0.0:$PORT wsgi:app
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: FLASK_SECRET_KEY
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_AUTH_ENABLED
+        value: "true"
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+      - key: SUPABASE_EMAIL_REDIRECT_URL
+        sync: false
+      - key: SUPABASE_STORAGE_BUCKET
+        value: career-documents
