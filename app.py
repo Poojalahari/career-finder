@@ -1,17 +1,26 @@
 """Compatibility launcher for `python app.py`; the Flask app lives in Backend."""
 
 import os
+import subprocess
 import sys
-from pathlib import Path
 
 
-ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / "Backend"))
-os.environ.setdefault("FLASK_ENV", "development")
-
-from wsgi import app  # noqa: E402
+def main() -> int:
+    command = [
+        sys.executable,
+        "-m",
+        "flask",
+        "--app",
+        "Backend/wsgi.py",
+        "run",
+        "--host=127.0.0.1",
+        f"--port={os.getenv('PORT', '5000')}",
+    ]
+    if os.getenv("FLASK_DEBUG", "false").lower() == "true":
+        command.append("--debug")
+    env = {**os.environ, "FLASK_ENV": os.getenv("FLASK_ENV", "development")}
+    return subprocess.call(command, env=env)
 
 
 if __name__ == "__main__":
-    debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
-    app.run(host="127.0.0.1", port=int(os.getenv("PORT", "5000")), debug=debug)
+    raise SystemExit(main())

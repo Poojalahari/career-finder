@@ -1,9 +1,28 @@
+import importlib.util
+from pathlib import Path
+
 import pytest
 from flask import Flask
 
 from app import create_app, validate_production_config
 from app.extensions import db
 from config import ProductionConfig, TestingConfig
+
+
+def test_root_launcher_delegates_without_import_cycle(monkeypatch):
+    path = Path(__file__).resolve().parents[2] / "app.py"
+    spec = importlib.util.spec_from_file_location("compatibility_launcher", path)
+    launcher = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(launcher)
+    captured = {}
+    monkeypatch.setenv("PORT", "5050")
+    monkeypatch.setenv("FLASK_DEBUG", "true")
+    monkeypatch.setenv("FLASK_ENV", "development")
+    monkeypatch.setattr(launcher.subprocess, "call", lambda command, env: captured.update(command=command, env=env) or 0)
+
+    assert launcher.main() == 0
+    assert captured["command"][-3:] == ["--host=127.0.0.1", "--port=5050", "--debug"]
+    assert captured["env"]["FLASK_ENV"] == "development"
 
 
 def test_health(client):
