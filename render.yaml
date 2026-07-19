@@ -8,6 +8,8 @@ services:
     healthCheckPath: /health
     autoDeployTrigger: commit
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
       - key: FLASK_ENV
         value: production
       - key: SESSION_COOKIE_SECURE
