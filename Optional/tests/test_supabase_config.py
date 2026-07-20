@@ -1,6 +1,14 @@
 from app import create_app
 from app.services import supabase_auth
-from config import TestingConfig
+from config import ProductionConfig, TestingConfig, environment_name, get_config
+
+
+def test_render_always_uses_production_config(monkeypatch):
+    monkeypatch.setenv("RENDER", "true")
+    monkeypatch.setenv("FLASK_ENV", "development")
+
+    assert environment_name() == "production"
+    assert get_config() is ProductionConfig
 
 
 def test_placeholder_configuration_is_rejected():

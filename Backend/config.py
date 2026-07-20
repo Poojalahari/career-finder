@@ -14,6 +14,15 @@ DEFAULT_DATABASE_URI = f"sqlite:///{(BASE_DIR / 'instance' / 'career.db').as_pos
 PLACEHOLDERS = ("project_id", "replace-me", "replace-with", "your-domain.example.com", "change-me")
 
 
+def environment_name() -> str:
+    if os.getenv("RENDER", "").strip().lower() == "true":
+        return "production"
+    explicit = os.getenv("FLASK_ENV", "").strip().lower()
+    if explicit:
+        return explicit
+    return "development"
+
+
 def configured(value: str | None) -> bool:
     text = str(value or "").strip().lower()
     return bool(text) and not any(marker in text for marker in PLACEHOLDERS)
@@ -33,7 +42,7 @@ def database_uri() -> str:
     value = os.getenv("DATABASE_URL")
     if not value:
         return DEFAULT_DATABASE_URI
-    if os.getenv("FLASK_ENV", "development").lower() != "production" and any(
+    if environment_name() != "production" and any(
         marker in value.lower() for marker in ("project_id", "database_password", "replace")
     ):
         return DEFAULT_DATABASE_URI
@@ -50,7 +59,7 @@ def database_uri() -> str:
 
 
 class Config:
-    ENV = os.getenv("FLASK_ENV", "development").lower()
+    ENV = environment_name()
     DATABASE_URL = os.getenv("DATABASE_URL", "")
     SECRET_KEY = os.getenv("FLASK_SECRET_KEY") or os.getenv("SECRET_KEY", "dev-only-change-me")
     SQLALCHEMY_DATABASE_URI = database_uri()
@@ -112,7 +121,7 @@ class ProductionConfig(Config):
 
 
 def get_config():
-    env = os.getenv("FLASK_ENV", "development").lower()
+    env = environment_name()
     if env == "production":
         return ProductionConfig
     if env == "testing":
